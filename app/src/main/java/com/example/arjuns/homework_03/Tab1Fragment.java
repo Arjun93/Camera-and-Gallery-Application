@@ -1,11 +1,10 @@
 package com.example.arjuns.homework_03;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,22 +47,20 @@ public class Tab1Fragment extends Fragment {
         myGridView.setAdapter(new ImageAdapter(myView.getContext(),cursor));
 
 
-        /*myGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        myGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView parent, View v, int position, long id) {
                 // Get the data location of the image
-                String[] projection = {MediaStore.Images.Media.DATA};
-                cursor = getActivity().managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        projection, // Which columns to return
-                        null,       // Return all rows
-                        null,
-                        null);
                 columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 cursor.moveToPosition(position);
                 // Get image filename
                 String imagePath = cursor.getString(columnIndex);
                 // Use this path to do further processing, i.e. full screen display
+                Intent displayMediaIntent = new Intent(getActivity().getApplicationContext(), DisplayImage.class);
+                displayMediaIntent.putExtra("filePath", imagePath);
+                //displayMediaIntent.putExtra("gridPosition", position);
+                startActivity(displayMediaIntent);
             }
-        });*/
+        });
 
         return myView;
     }

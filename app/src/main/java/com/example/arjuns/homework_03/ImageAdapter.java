@@ -3,14 +3,12 @@ package com.example.arjuns.homework_03;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -52,7 +50,7 @@ public class ImageAdapter extends BaseAdapter{
         BitmapFactory.Options myBitmapOptions = new BitmapFactory.Options();
         myBitmapOptions.inSampleSize = 8;
         if (view == null) {
-            view = myInflater.inflate(R.layout.grid_view_element, null);
+            view = myInflater.inflate(R.layout.grid_view_element_layout, null);
         }
             myGridImageView = (ImageView)view.findViewById(R.id.myGridImageView);
             // Move cursor to current position
