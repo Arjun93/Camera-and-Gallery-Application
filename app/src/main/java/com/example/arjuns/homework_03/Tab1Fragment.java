@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,33 +33,68 @@ public class Tab1Fragment extends Fragment {
 
 
         // Set up an array of the Thumbnail Image ID column we want
-        String[] projection = {MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID};
-
+        String[] projection = {MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media._ID,
+                MediaStore.Files.FileColumns.DATE_MODIFIED,
+                MediaStore.Files.FileColumns.MEDIA_TYPE,
+                MediaStore.Files.FileColumns.MIME_TYPE,
+                MediaStore.Files.FileColumns.TITLE};
+        String selectionQuery = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
+                + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
+                + " OR "
+                + MediaStore.Files.FileColumns.MEDIA_TYPE + "="
+                + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
+        final String sortDescending = MediaStore.Files.FileColumns.DATE_ADDED + " DESC";
 
         // Create the cursor pointing to the SDCard
-        cursor = getActivity().managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+        cursor = getActivity().managedQuery(MediaStore.Files.getContentUri("external"),
                 projection, // Which columns to return
-                null,       // Return all rows
+                selectionQuery,       // Return all rows
                 null,
-                MediaStore.Images.Media.DATE_ADDED + " DESC ");
+                sortDescending);
 
         // Get the column index of the Thumbnails Image ID
-        columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        myGridView.setAdapter(new ImageAdapter(myView.getContext(),cursor));
+        //columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 
+        int numberOfFiles =cursor.getCount();
+        String[] filePaths = new String[numberOfFiles];
+        String[] fileNames = new String[numberOfFiles];
+        final int[] fileNameExtensions = new int[numberOfFiles];
+        for (int i = 0; i < numberOfFiles; i++) {
+            cursor.moveToPosition(i);
+
+            int columnIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
+            int fileNamesIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE);
+            int extensionsIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE);
+
+            // Get the path of the image file
+            filePaths[i] = cursor.getString(columnIndex);
+            // Get the name image file
+            fileNames[i] = cursor.getString(fileNamesIndex);
+            // Get the name image extension
+            fileNameExtensions[i] = cursor.getInt(extensionsIndex);
+        }
+
+        myGridView.setAdapter(new ImageAdapter(myView.getContext(), cursor, fileNameExtensions));
 
         myGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView parent, View v, int position, long id) {
                 // Get the data location of the image
-                columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
                 cursor.moveToPosition(position);
                 // Get image filename
-                String imagePath = cursor.getString(columnIndex);
+                String mediaPath = cursor.getString(columnIndex);
                 // Use this path to do further processing, i.e. full screen display
-                Intent displayMediaIntent = new Intent(getActivity().getApplicationContext(), DisplayImage.class);
-                displayMediaIntent.putExtra("filePath", imagePath);
-                //displayMediaIntent.putExtra("gridPosition", position);
-                startActivity(displayMediaIntent);
+                if(fileNameExtensions[position] == 3) {
+                    Intent displayVideoIntent = new Intent(getActivity().getApplicationContext(), DisplayVideo.class);
+                    displayVideoIntent.putExtra("filePath", mediaPath);
+                    startActivity(displayVideoIntent);
+                }
+                else {
+                    Intent displayMediaIntent = new Intent(getActivity().getApplicationContext(), DisplayImage.class);
+                    displayMediaIntent.putExtra("filePath", mediaPath);
+                    startActivity(displayMediaIntent);
+                }
             }
         });
 

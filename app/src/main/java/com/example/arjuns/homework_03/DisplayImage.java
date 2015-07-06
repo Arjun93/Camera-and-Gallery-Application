@@ -22,7 +22,6 @@ public class DisplayImage extends Activity {
         //int position = myIntent.getExtras().getInt("gridPosition");
         String path = displayMediaIntent.getStringExtra("filePath");
         BitmapFactory.Options myBitmapOptions = new BitmapFactory.Options();
-
         myBitmapOptions.inSampleSize = 2;
         myDisplayImageView.setImageBitmap(BitmapFactory.decodeFile(path, myBitmapOptions));
     }

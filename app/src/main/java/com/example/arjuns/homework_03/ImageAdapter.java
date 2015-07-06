@@ -2,7 +2,9 @@ package com.example.arjuns.homework_03;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,12 +24,13 @@ public class ImageAdapter extends BaseAdapter{
     Tab1Fragment myFetcher;
     private static LayoutInflater myInflater;
     ImageView myGridImageView;
-
+    int[] myfileNameExtension;
     // Constructor
-    public ImageAdapter(Context c, Cursor cursor){
+    public ImageAdapter(Context c, Cursor cursor, int[] fileNameExtension){
         mContext = c;
         myImageCursor = cursor;
         myInflater =  (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        myfileNameExtension=fileNameExtension;
     }
 
     @Override
@@ -56,14 +59,19 @@ public class ImageAdapter extends BaseAdapter{
             // Move cursor to current position
             myImageCursor.moveToPosition(position);
             // Get the current value for the requested column
-            int myColumnIndex = myImageCursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            int myColumnIndex = myImageCursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
             String imagePath = myImageCursor.getString(myColumnIndex);
             File myFile = new File(imagePath);
             Log.i("IMAGEPATH",""+imagePath);
             if(myFile.exists())
             {
-               //myGridImageView.setImageURI(Uri.parse(imagePath));
-               myGridImageView.setImageBitmap(BitmapFactory.decodeFile(imagePath, myBitmapOptions));
+               if(myfileNameExtension[position] ==3 ){
+                   Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(imagePath, MediaStore.Video.Thumbnails.MICRO_KIND);
+                   myGridImageView.setImageBitmap(bitmap);
+               }
+                else {
+                   myGridImageView.setImageBitmap(BitmapFactory.decodeFile(imagePath, myBitmapOptions));
+               }
             }
 
         return view;

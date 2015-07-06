@@ -25,6 +25,11 @@
             android:name=".DisplayImage"
             android:label="@string/app_name" >
         </activity>
+
+        <activity
+            android:name=".DisplayVideo"
+            android:label="@string/app_name" >
+        </activity>
     </application>
 
 </manifest>
