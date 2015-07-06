@@ -13,15 +13,19 @@ import android.widget.ImageView;
  * Created by arjuns on 7/5/2015.
  */
 public class DisplayImage extends Activity {
+    ImageView myDisplayImageView;
+    Intent displayMediaIntent;
+    String path;
+    BitmapFactory.Options myBitmapOptions;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.display_image_layout);
-        ImageView myDisplayImageView = (ImageView)findViewById(R.id.displayImageView);
-        Intent displayMediaIntent = getIntent();
-        //int position = myIntent.getExtras().getInt("gridPosition");
-        String path = displayMediaIntent.getStringExtra("filePath");
-        BitmapFactory.Options myBitmapOptions = new BitmapFactory.Options();
+        myDisplayImageView = (ImageView)findViewById(R.id.displayImageView);
+        displayMediaIntent = getIntent();
+        path = displayMediaIntent.getStringExtra("filePath");
+        myBitmapOptions = new BitmapFactory.Options();
         myBitmapOptions.inSampleSize = 2;
         myDisplayImageView.setImageBitmap(BitmapFactory.decodeFile(path, myBitmapOptions));
     }

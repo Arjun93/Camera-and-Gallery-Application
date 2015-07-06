@@ -24,12 +24,15 @@ public class Tab1Fragment extends Fragment {
      * Column index for the Thumbnails Image IDs.
      */
     private int columnIndex;
+    int i,numberOfFiles,fileNamesIndex,extensionsIndex;
+    String[] filePaths,fileNames;
+    GridView myGridView;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View myView = inflater.inflate(R.layout.gallery_layout,container,false);
-        GridView myGridView = (GridView)myView.findViewById(R.id.tab1);
+        myGridView = (GridView)myView.findViewById(R.id.tab1);
 
 
         // Set up an array of the Thumbnail Image ID column we want
@@ -54,19 +57,17 @@ public class Tab1Fragment extends Fragment {
                 sortDescending);
 
         // Get the column index of the Thumbnails Image ID
-        //columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 
-        int numberOfFiles =cursor.getCount();
-        String[] filePaths = new String[numberOfFiles];
-        String[] fileNames = new String[numberOfFiles];
+        numberOfFiles =cursor.getCount();
+        filePaths = new String[numberOfFiles];
+        fileNames = new String[numberOfFiles];
         final int[] fileNameExtensions = new int[numberOfFiles];
-        for (int i = 0; i < numberOfFiles; i++) {
+
+        for (i = 0; i < numberOfFiles; i++) {
             cursor.moveToPosition(i);
-
-            int columnIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
-            int fileNamesIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE);
-            int extensionsIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE);
-
+            columnIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
+            fileNamesIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE);
+            extensionsIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE);
             // Get the path of the image file
             filePaths[i] = cursor.getString(columnIndex);
             // Get the name image file

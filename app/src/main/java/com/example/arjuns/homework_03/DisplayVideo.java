@@ -14,24 +14,28 @@ import android.widget.VideoView;
  * Created by arjuns on 7/6/2015.
  */
 public class DisplayVideo extends Activity {
-    VideoView myVideoView;
     DisplayMetrics myDisplayMetrics;
-    SurfaceView mySurfaceView;
     MediaController myMediaController;
+    int height, width;
+    String path;
+    Intent displayMediaIntent;
+    VideoView myDisplayVideoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.display_video_layout);
-        VideoView myDisplayVideoView = (VideoView)findViewById(R.id.myGridVideoView);
-        Intent displayMediaIntent = getIntent();
-        String path = displayMediaIntent.getStringExtra("filePath");
+
+        myDisplayVideoView = (VideoView)findViewById(R.id.myGridVideoView);
+        displayMediaIntent = getIntent();
+        path = displayMediaIntent.getStringExtra("filePath");
+
         myMediaController = new MediaController(this);
-        //Displaying all the metrics
         myDisplayMetrics = new DisplayMetrics();
         this.getWindowManager().getDefaultDisplay().getMetrics(myDisplayMetrics);
-        int height = myDisplayMetrics.heightPixels;
-        int width = myDisplayMetrics.widthPixels;
+
+        height = myDisplayMetrics.heightPixels;
+        width = myDisplayMetrics.widthPixels;
 
         myDisplayVideoView.setMinimumWidth(width);
         myDisplayVideoView.setMinimumHeight(height);
