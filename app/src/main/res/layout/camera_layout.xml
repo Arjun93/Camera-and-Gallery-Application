@@ -11,13 +11,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Take picture"
-        android:id="@+id/button"
+        android:id="@+id/capturePhotoButton"
         android:layout_gravity="left|top" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Record Video"
-        android:id="@+id/button2"
+        android:id="@+id/captureVideoButton"
         android:layout_gravity="right|top" />
+
 </FrameLayout>
