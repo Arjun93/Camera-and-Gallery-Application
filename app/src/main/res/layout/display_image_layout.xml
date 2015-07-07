@@ -10,4 +10,5 @@
         android:padding="8dp"
         android:scaleType="fitCenter"
         android:id="@+id/displayImageView" />
+
 </RelativeLayout>

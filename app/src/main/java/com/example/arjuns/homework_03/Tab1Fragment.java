@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import java.sql.Date;
+
 /**
  * Created by arjuns on 7/2/2015.
  */
@@ -62,18 +64,22 @@ public class Tab1Fragment extends Fragment {
         filePaths = new String[numberOfFiles];
         fileNames = new String[numberOfFiles];
         final int[] fileNameExtensions = new int[numberOfFiles];
+        final String[] fileDates = new String[numberOfFiles];
 
         for (i = 0; i < numberOfFiles; i++) {
             cursor.moveToPosition(i);
             columnIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
             fileNamesIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE);
             extensionsIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE);
+            int dateIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_MODIFIED);
             // Get the path of the image file
             filePaths[i] = cursor.getString(columnIndex);
             // Get the name image file
             fileNames[i] = cursor.getString(fileNamesIndex);
             // Get the name image extension
             fileNameExtensions[i] = cursor.getInt(extensionsIndex);
+
+            fileDates[i]= cursor.getString(dateIndex);
         }
 
         myGridView.setAdapter(new ImageAdapter(myView.getContext(), cursor, fileNameExtensions));
@@ -94,6 +100,7 @@ public class Tab1Fragment extends Fragment {
                 else {
                     Intent displayMediaIntent = new Intent(getActivity().getApplicationContext(), DisplayImage.class);
                     displayMediaIntent.putExtra("filePath", mediaPath);
+                    displayMediaIntent.putExtra("date", fileDates[position]);
                     startActivity(displayMediaIntent);
                 }
             }

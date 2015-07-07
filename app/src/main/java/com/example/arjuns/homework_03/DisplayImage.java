@@ -7,7 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 /**
  * Created by arjuns on 7/5/2015.
@@ -17,14 +19,20 @@ public class DisplayImage extends Activity {
     Intent displayMediaIntent;
     String path;
     BitmapFactory.Options myBitmapOptions;
+    String imageDate;
+    TextView myTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.display_image_layout);
         myDisplayImageView = (ImageView)findViewById(R.id.displayImageView);
+        myTextView = (TextView)findViewById(R.id.textView2);
         displayMediaIntent = getIntent();
         path = displayMediaIntent.getStringExtra("filePath");
+        /*imageDate = displayMediaIntent.getStringExtra("date");
+        Log.i("IMAGE DATE",""+imageDate);
+        myTextView.setText(imageDate);*/
         myBitmapOptions = new BitmapFactory.Options();
         myBitmapOptions.inSampleSize = 2;
         myDisplayImageView.setImageBitmap(BitmapFactory.decodeFile(path, myBitmapOptions));
