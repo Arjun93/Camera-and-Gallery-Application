@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
@@ -45,6 +46,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -385,29 +387,49 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+
         super.onActivityCreated(savedInstanceState);
+        //TODO - saving of picture
+        String[] newProjection = {MediaStore.Files.FileColumns.DATA};
 
-        //final String path = android.os.Environment.DIRECTORY_DCIM;
-        String[] projection = {MediaStore.Files.FileColumns.DATA};
-
-        String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
+        String newSelection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
                 + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
                 + " OR "
                 + MediaStore.Files.FileColumns.MEDIA_TYPE + "="
                 + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
 
-        Cursor cursor = getActivity().managedQuery(MediaStore.Files.getContentUri("external"),
-                projection,
-                selection,
+        Cursor newCursor = getActivity().managedQuery(MediaStore.Files.getContentUri("external"),
+                newProjection,
+                newSelection,
                 null,
                 null);
 
-        cursor.moveToPosition(1);
+        newCursor.moveToPosition(1);
         String dataIndex = MediaStore.Files.FileColumns.DATA;
-        int filePathColumn = cursor.getColumnIndexOrThrow(dataIndex);
-        String filePath = cursor.getString(filePathColumn);
+        int newColumnIndex = newCursor.getColumnIndexOrThrow(dataIndex);
+        String newFilePath = newCursor.getString(newColumnIndex);
 
-        mFile = new File(filePath, "pic.jpg");
+        showToast(newFilePath);
+
+        int substrInt = newFilePath.lastIndexOf("/");
+        String actualLocation = "";
+        if(substrInt > 0) {
+            actualLocation = newFilePath.substring(0, substrInt + 1);
+        }
+        showToast(actualLocation);
+
+        //TODO - as per question name must be saved and only after preview
+        String fileName = "PIC"+Long.toString(System.currentTimeMillis())+".jpg";
+        mFile = new File(actualLocation, fileName);
+
+        ContentValues values = new ContentValues();
+
+        values.put(MediaStore.Files.FileColumns.DATE_ADDED, System.currentTimeMillis());
+        values.put(MediaStore.Files.FileColumns.DATE_MODIFIED, System.currentTimeMillis());
+        values.put(MediaStore.Files.FileColumns.MEDIA_TYPE, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
+        values.put(MediaStore.Files.FileColumns.DATA, actualLocation + fileName);
+
+        getActivity().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
     }
 
     @Override
