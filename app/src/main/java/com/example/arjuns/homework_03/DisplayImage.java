@@ -30,9 +30,6 @@ public class DisplayImage extends Activity {
         myTextView = (TextView)findViewById(R.id.textView2);
         displayMediaIntent = getIntent();
         path = displayMediaIntent.getStringExtra("filePath");
-        /*imageDate = displayMediaIntent.getStringExtra("date");
-        Log.i("IMAGE DATE",""+imageDate);
-        myTextView.setText(imageDate);*/
         myBitmapOptions = new BitmapFactory.Options();
         myBitmapOptions.inSampleSize = 2;
         myDisplayImageView.setImageBitmap(BitmapFactory.decodeFile(path, myBitmapOptions));

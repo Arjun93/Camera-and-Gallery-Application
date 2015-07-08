@@ -15,6 +15,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
 /**
  * Created by arjuns on 7/2/2015.
  */
@@ -25,22 +29,27 @@ public class Tab2Fragment extends Fragment {
     ImageView myPhotoView;
     VideoView myVideoView;
     BitmapFactory.Options myBitmapOptions;
+    Button myCaptureImageButton, myCaptureVideoButton, mySaveButton, myDiscardButton;
+    File myMediaFile;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.camera_layout, container, false);
-        Button myCaptureImageButton = (Button) view.findViewById(R.id.capturePhotoButton);
-        Button myCaptureVideoButton = (Button) view.findViewById(R.id.captureVideoButton);
+        myCaptureImageButton = (Button) view.findViewById(R.id.capturePhotoButton);
+        myCaptureVideoButton = (Button) view.findViewById(R.id.captureVideoButton);
+        mySaveButton = (Button) view.findViewById(R.id.saveButton);
+        myDiscardButton = (Button) view.findViewById(R.id.discardButton);
         myPhotoView = (ImageView) view.findViewById(R.id.photoView);
         myVideoView = (VideoView) view.findViewById(R.id.videoView);
+
         myCaptureImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent invokeCameraIntent1 = new Intent(getActivity().getApplicationContext(), TakePictureActivity.class);
                 startActivityForResult(invokeCameraIntent1, REQUEST_CODE_IMAGE);
-
             }
         });
+
         myCaptureVideoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -48,6 +57,26 @@ public class Tab2Fragment extends Fragment {
                 startActivityForResult(invokeCameraIntent2, REQUEST_CODE_VIDEO);
             }
         });
+
+        /*myDiscardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myMediaFile.delete();
+                Toast.makeText(getActivity().getApplicationContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                myVideoView.setVisibility(View.INVISIBLE);
+                myPhotoView.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        mySaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity().getApplicationContext(),"Saved",Toast.LENGTH_SHORT).show();
+                myVideoView.setVisibility(View.INVISIBLE);
+                myPhotoView.setVisibility(View.INVISIBLE);
+            }
+        });*/
+
         return view;
     }
 
@@ -64,6 +93,28 @@ public class Tab2Fragment extends Fragment {
                     myBitmapOptions.inSampleSize = 2;
                     Bitmap myBitmap = BitmapFactory.decodeFile(filePath1,myBitmapOptions);
                     myPhotoView.setImageBitmap(myBitmap);
+                    myMediaFile = new File(filePath1);
+                    //myImageFile.delete();
+                    myDiscardButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            myMediaFile.delete();
+                            Toast.makeText(getActivity().getApplicationContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                            myVideoView.setVisibility(View.INVISIBLE);
+                            myPhotoView.setVisibility(View.INVISIBLE);
+                        }
+                    });
+
+                    mySaveButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(getActivity().getApplicationContext(),"Saved",Toast.LENGTH_SHORT).show();
+                            myVideoView.setVisibility(View.INVISIBLE);
+                            myPhotoView.setVisibility(View.INVISIBLE);
+                        }
+                    });
+
+
                 }
                 break;
 
@@ -76,6 +127,26 @@ public class Tab2Fragment extends Fragment {
                     myVideoView.setVideoPath(filePath2);
                     myVideoView.requestFocus();
                     myVideoView.start();
+                    myMediaFile = new File(filePath2);
+                    //myVideoFile.delete();
+                    myDiscardButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            myMediaFile.delete();
+                            Toast.makeText(getActivity().getApplicationContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                            myVideoView.setVisibility(View.INVISIBLE);
+                            myPhotoView.setVisibility(View.INVISIBLE);
+                        }
+                    });
+
+                    mySaveButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(getActivity().getApplicationContext(),"Saved",Toast.LENGTH_SHORT).show();
+                            myVideoView.setVisibility(View.INVISIBLE);
+                            myPhotoView.setVisibility(View.INVISIBLE);
+                        }
+                    });
                 }
                 break;
         }
