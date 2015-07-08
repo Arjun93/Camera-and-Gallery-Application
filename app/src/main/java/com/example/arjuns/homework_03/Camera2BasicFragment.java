@@ -204,7 +204,7 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
     /**
      * This is the output file for our picture.
      */
-    private File mFile;
+    private File myImageFile;
 
     /**
      * This a callback object for the {@link ImageReader}. "onImageAvailable" will be called when a
@@ -215,7 +215,7 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
 
         @Override
         public void onImageAvailable(ImageReader reader) {
-            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
+            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), myImageFile));
         }
 
     };
@@ -421,7 +421,7 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
 
         //TODO - as per question name must be saved and only after preview
         String fileName = "IMAGE_"+Long.toString(System.currentTimeMillis())+".jpg";
-        mFile = new File(actualLocation, fileName);
+        myImageFile = new File(actualLocation, fileName);
 
         ContentValues values = new ContentValues();
 
@@ -776,10 +776,10 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request,
                                                TotalCaptureResult result) {
-                    showToast("Saved: " + mFile);
+                    showToast("Saved: " + myImageFile);
                     unlockFocus();
                     Intent resultIntent = new Intent();
-                    resultIntent.putExtra("imageFilePath",mFile.getAbsolutePath());
+                    resultIntent.putExtra("imageFilePath",myImageFile.getAbsolutePath());
                     activity.setResult(Activity.RESULT_OK, resultIntent);
                     activity.finish();
                 }
@@ -845,11 +845,11 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
         /**
          * The file we save the image into.
          */
-        private final File mFile;
+        private final File myImageFile;
 
         public ImageSaver(Image image, File file) {
             mImage = image;
-            mFile = file;
+            myImageFile = file;
         }
 
         @Override
@@ -859,7 +859,7 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
             buffer.get(bytes);
             FileOutputStream output = null;
             try {
-                output = new FileOutputStream(mFile);
+                output = new FileOutputStream(myImageFile);
                 output.write(bytes);
 
             } catch (FileNotFoundException e) {

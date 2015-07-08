@@ -11,6 +11,7 @@ import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Matrix;
@@ -43,6 +44,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -114,6 +116,8 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
 
     };
 
+    private File myVideoFile;
+
     /**
      * The {@link Size} of camera preview.
      */
@@ -143,10 +147,6 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
      * An additional thread for running tasks that shouldn't block the UI.
      */
     private HandlerThread mBackgroundThread;
-    /**
-     * This is the output file for our picture.
-     */
-    private File myVideoFile;
 
     /**
      * A {@link Handler} for running tasks in the background.
@@ -259,10 +259,8 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
         mButtonVideo = (Button) view.findViewById(R.id.video);
         mButtonVideo.setOnClickListener(this);
-        view.findViewById(R.id.info).setOnClickListener(this);
+        //view.findViewById(R.id.info).setOnClickListener(this);
     }
-
-
 
     @Override
     public void onResume() {
@@ -313,32 +311,6 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
         mBackgroundThread = new HandlerThread("CameraBackground");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
-    }
-
-    /**
-     * A {@link Handler} for showing {@link Toast}s.
-     */
-    private Handler mMessageHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            Activity activity = getActivity();
-            if (activity != null) {
-                Toast.makeText(activity, (String) msg.obj, Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
-
-    /**
-     * Shows a {@link Toast} on the UI thread.
-     *
-     * @param text The message to show
-     */
-    private void showToast(String text) {
-        // We show a Toast by sending request message to mMessageHandler. This makes sure that the
-        // Toast is shown on the UI thread.
-        Message message = Message.obtain();
-        message.obj = text;
-        mMessageHandler.sendMessage(message);
     }
 
     /**
@@ -555,51 +527,60 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
     }
 
     private File getVideoFile(Context context) {
-        String[] newProjection = {MediaStore.Files.FileColumns.DATA};
+        //return new File(context.getExternalFilesDir(null), "video.mp4");
 
-        String newSelection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
-                + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
-                + " OR "
-                + MediaStore.Files.FileColumns.MEDIA_TYPE + "="
-                + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
+        if(myVideoFile == null){
+            String[] projection = {MediaStore.Files.FileColumns.DATA};
 
-        Cursor newCursor = getActivity().managedQuery(MediaStore.Files.getContentUri("external"),
-                newProjection,
-                newSelection,
-                null,
-                null);
+            String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
+                    + " OR "
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE + "="
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
 
-        newCursor.moveToPosition(1);
-        String dataIndex = MediaStore.Files.FileColumns.DATA;
-        int newColumnIndex = newCursor.getColumnIndexOrThrow(dataIndex);
-        String newFilePath = newCursor.getString(newColumnIndex);
+            Cursor cursor = getActivity().managedQuery(MediaStore.Files.getContentUri("external"),
+                    projection,
+                    selection,
+                    null,
+                    null);
 
-        showToast(newFilePath);
+            cursor.moveToPosition(1);
+            String dataIndex = MediaStore.Files.FileColumns.DATA;
+            int filePathColumn = cursor.getColumnIndexOrThrow(dataIndex);
+            String filePath = cursor.getString(filePathColumn);
 
-        int substrInt = newFilePath.lastIndexOf("/");
-        String actualLocation = "";
-        if(substrInt > 0) {
-            actualLocation = newFilePath.substring(0, substrInt + 1);
+            //showToast(filePath);
+
+            int substrInt = filePath.lastIndexOf("/");
+            String actualLocation = "";
+            if(substrInt > 0) {
+                actualLocation = filePath.substring(0,substrInt+1);
+            }
+            //showToast(actualLocation);
+
+            //TODO - as per question name must be saved and only after preview
+            //Time time = new Time();
+            String currentTime = Long.toString(System.currentTimeMillis());
+            String fileName = "MOV"+currentTime+".mp4";
+            myVideoFile = new File(actualLocation, fileName);
+
+            ContentValues values = new ContentValues();
+
+            values.put(MediaStore.Files.FileColumns.DATE_ADDED, currentTime);
+            values.put(MediaStore.Files.FileColumns.DATE_MODIFIED, currentTime);
+            values.put(MediaStore.Files.FileColumns.MEDIA_TYPE, MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
+            values.put(MediaStore.Files.FileColumns.DATA, actualLocation + fileName);
+
+            getActivity().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
         }
-        showToast(actualLocation);
-
-        //TODO - as per question name must be saved and only after preview
-        String fileName = "VIDEO_"+Long.toString(System.currentTimeMillis())+".mp4";
-        myVideoFile = new File(actualLocation, fileName);
-
-        ContentValues values = new ContentValues();
-
-        values.put(MediaStore.Files.FileColumns.DATE_ADDED, System.currentTimeMillis());
-        values.put(MediaStore.Files.FileColumns.DATE_MODIFIED, System.currentTimeMillis());
-        values.put(MediaStore.Files.FileColumns.MEDIA_TYPE, MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
-        values.put(MediaStore.Files.FileColumns.DATA, actualLocation + fileName);
-
-        getActivity().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
         return myVideoFile;
     }
 
+
+
     private void startRecordingVideo() {
         try {
+
             // UI
             mButtonVideo.setText(R.string.stop);
             mIsRecordingVideo = true;
@@ -618,12 +599,19 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
         // Stop recording
         mMediaRecorder.stop();
         mMediaRecorder.reset();
+        File videoFile = null;
         Activity activity = getActivity();
         if (null != activity) {
-            Toast.makeText(activity, "Video saved: " + getVideoFile(activity),
+            videoFile = getVideoFile(activity);
+            Toast.makeText(activity, "Video saved: " + videoFile,
                     Toast.LENGTH_SHORT).show();
         }
-        startPreview();
+        //startPreview();
+
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("videoFilePath",videoFile.getAbsolutePath());
+        activity.setResult(Activity.RESULT_OK,resultIntent);
+        activity.finish();
     }
 
     /**
@@ -657,5 +645,4 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
         }
 
     }
-
 }

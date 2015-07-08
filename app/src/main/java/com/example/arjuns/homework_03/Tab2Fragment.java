@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 /**
  * Created by arjuns on 7/2/2015.
@@ -19,7 +21,9 @@ import android.widget.Toast;
 public class Tab2Fragment extends Fragment {
     private static View view;
     private static final int REQUEST_CODE_IMAGE = 3;
+    private static final int REQUEST_CODE_VIDEO = 4;
     ImageView myPhotoView;
+    VideoView myVideoView;
     BitmapFactory.Options myBitmapOptions;
 
     @Override
@@ -28,6 +32,7 @@ public class Tab2Fragment extends Fragment {
         Button myCaptureImageButton = (Button) view.findViewById(R.id.capturePhotoButton);
         Button myCaptureVideoButton = (Button) view.findViewById(R.id.captureVideoButton);
         myPhotoView = (ImageView) view.findViewById(R.id.photoView);
+        myVideoView = (VideoView) view.findViewById(R.id.videoView);
         myCaptureImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,11 +45,9 @@ public class Tab2Fragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent invokeCameraIntent2 = new Intent(getActivity().getApplicationContext(), TakeVideoActivity.class);
-                startActivity(invokeCameraIntent2);
+                startActivityForResult(invokeCameraIntent2, REQUEST_CODE_VIDEO);
             }
         });
-
-
         return view;
     }
 
@@ -54,15 +57,27 @@ public class Tab2Fragment extends Fragment {
         switch (requestCode) {
             case (REQUEST_CODE_IMAGE):
                 if (resultCode == Activity.RESULT_OK) {
-                    String filePath = data.getStringExtra("imageFilePath");
-                    //videoPreview.setVisibility(View.GONE);
-
+                    String filePath1 = data.getStringExtra("imageFilePath");
+                    myVideoView.setVisibility(View.INVISIBLE);
                     myPhotoView.setVisibility(View.VISIBLE);
                     myBitmapOptions = new BitmapFactory.Options();
                     myBitmapOptions.inSampleSize = 2;
-                    Bitmap myBitmap = BitmapFactory.decodeFile(filePath,myBitmapOptions);
+                    Bitmap myBitmap = BitmapFactory.decodeFile(filePath1,myBitmapOptions);
                     myPhotoView.setImageBitmap(myBitmap);
                 }
+                break;
+
+            case (REQUEST_CODE_VIDEO):
+                if (resultCode == Activity.RESULT_OK) {
+                    String filePath2 = data.getStringExtra("videoFilePath");
+                    myPhotoView.setVisibility(View.INVISIBLE);
+                    myVideoView.setVisibility(View.VISIBLE);
+                    Log.i("FILEPATH", "" + filePath2);
+                    myVideoView.setVideoPath(filePath2);
+                    myVideoView.requestFocus();
+                    myVideoView.start();
+                }
+                break;
         }
     }
 }
