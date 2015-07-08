@@ -6,4 +6,8 @@
     <string name="intro_message">Camera2 API</string>
     <string name="picture">Picture</string>
     <string name="description_info">Info</string>
+    <string name="save">Save</string>
+    <string name="discard">Discard</string>
+    <string name="record">Record</string>
+    <string name="stop">Stop</string>
 </resources>

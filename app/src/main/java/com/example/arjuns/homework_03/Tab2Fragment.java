@@ -22,10 +22,19 @@ public class Tab2Fragment extends Fragment {
         myCaptureImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent invokeCameraIntent = new Intent(getActivity().getApplicationContext(),TakePictureActivity.class);
-                startActivity(invokeCameraIntent);
+                Intent invokeCameraIntent1 = new Intent(getActivity().getApplicationContext(),TakePictureActivity.class);
+                startActivity(invokeCameraIntent1);
             }
         });
+        myCaptureVideoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent invokeCameraIntent2 = new Intent(getActivity().getApplicationContext(),TakeVideoActivity.class);
+                startActivity(invokeCameraIntent2);
+            }
+        });
+
+
         return view;
     }
 }

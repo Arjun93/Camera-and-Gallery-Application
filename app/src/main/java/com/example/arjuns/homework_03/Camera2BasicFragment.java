@@ -419,7 +419,7 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
         showToast(actualLocation);
 
         //TODO - as per question name must be saved and only after preview
-        String fileName = "PIC"+Long.toString(System.currentTimeMillis())+".jpg";
+        String fileName = "IMAGE_"+Long.toString(System.currentTimeMillis())+".jpg";
         mFile = new File(actualLocation, fileName);
 
         ContentValues values = new ContentValues();
