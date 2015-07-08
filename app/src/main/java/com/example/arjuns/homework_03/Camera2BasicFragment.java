@@ -27,6 +27,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -48,10 +49,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -390,7 +393,7 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
     public void onActivityCreated(Bundle savedInstanceState) {
 
         super.onActivityCreated(savedInstanceState);
-        //TODO - saving of picture
+
         String[] newProjection = {MediaStore.Files.FileColumns.DATA};
 
         String newSelection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
@@ -431,6 +434,13 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
         values.put(MediaStore.Files.FileColumns.DATA, actualLocation + fileName);
 
         getActivity().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
+
+        Date myDate = new Date();
+
+        Log.i("Andrew ID", "" + this.getActivity().getApplicationContext().getString(R.string.andrewID));
+        Log.i("Device Name", "" + Build.DEVICE + " " + Build.BRAND);
+        Log.i("OS Version", "" + Build.VERSION.RELEASE);
+        Log.i("Time","" + myDate.toString());
     }
 
     @Override
@@ -468,26 +478,8 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
 
         CameraManager manager = (CameraManager) this.getActivity().getSystemService(Context.CAMERA_SERVICE);
 
-        /*Log.i("krishnan1",activity.toString());
-
-        String cameraId2 = null;
-        try {
-            cameraId2 = manager.getCameraIdList()[0];
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-        try {
-            CameraCharacteristics cc = manager.getCameraCharacteristics(cameraId2);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-        Log.i("krishnan2",cameraId2);*/
-
-
         try {
             for (String cameraId : manager.getCameraIdList()) {
-
-                Log.i("krishnan",cameraId);
 
                 CameraCharacteristics characteristics
                         = manager.getCameraCharacteristics(cameraId);
