@@ -8,6 +8,7 @@ import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.ImageFormat;
@@ -777,6 +778,10 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
                                                TotalCaptureResult result) {
                     showToast("Saved: " + mFile);
                     unlockFocus();
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("imageFilePath",mFile.getAbsolutePath());
+                    activity.setResult(Activity.RESULT_OK, resultIntent);
+                    activity.finish();
                 }
             };
 
@@ -856,6 +861,7 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
             try {
                 output = new FileOutputStream(mFile);
                 output.write(bytes);
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
