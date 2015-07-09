@@ -413,20 +413,20 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
         int newColumnIndex = newCursor.getColumnIndexOrThrow(dataIndex);
         String newFilePath = newCursor.getString(newColumnIndex);
 
-        showToast(newFilePath);
+        //showToast(newFilePath);
 
         int substrInt = newFilePath.lastIndexOf("/");
         String actualLocation = "";
         if(substrInt > 0) {
             actualLocation = newFilePath.substring(0, substrInt + 1);
         }
-        showToast(actualLocation);
+        //showToast(actualLocation);
 
         //TODO - as per question name must be saved and only after preview
         String fileName = "IMAGE_"+Long.toString(System.currentTimeMillis())+".jpg";
         myImageFile = new File(actualLocation, fileName);
-
-        ContentValues values = new ContentValues();
+        showToast(actualLocation);
+        /*ContentValues values = new ContentValues();
 
         values.put(MediaStore.Files.FileColumns.DATE_ADDED, System.currentTimeMillis());
         values.put(MediaStore.Files.FileColumns.DATE_MODIFIED, System.currentTimeMillis());
@@ -434,7 +434,7 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
         values.put(MediaStore.Files.FileColumns.DATA, actualLocation + fileName);
 
         getActivity().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
-
+*/
         Date myDate = new Date();
 
         Log.i("Andrew ID", "" + this.getActivity().getApplicationContext().getString(R.string.andrewID));

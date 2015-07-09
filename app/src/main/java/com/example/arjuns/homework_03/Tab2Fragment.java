@@ -2,10 +2,12 @@ package com.example.arjuns.homework_03;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +33,8 @@ public class Tab2Fragment extends Fragment {
     BitmapFactory.Options myBitmapOptions;
     Button myCaptureImageButton, myCaptureVideoButton, mySaveButton, myDiscardButton;
     File myMediaFile;
+    String filePath1,filePath2;
+    boolean isImageFlag = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,7 +62,7 @@ public class Tab2Fragment extends Fragment {
             }
         });
 
-        /*myDiscardButton.setOnClickListener(new View.OnClickListener() {
+        myDiscardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 myMediaFile.delete();
@@ -71,11 +75,33 @@ public class Tab2Fragment extends Fragment {
         mySaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(isImageFlag) {
+                    String fileName = "IMAGE_" + Long.toString(System.currentTimeMillis()) + ".jpg";
+                    myMediaFile = new File(filePath1, fileName);
+                    ContentValues values = new ContentValues();
+
+                    values.put(MediaStore.Files.FileColumns.DATE_ADDED, System.currentTimeMillis());
+                    values.put(MediaStore.Files.FileColumns.DATE_MODIFIED, System.currentTimeMillis());
+                    values.put(MediaStore.Files.FileColumns.MEDIA_TYPE, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
+                    values.put(MediaStore.Files.FileColumns.DATA, filePath1);
+                    getActivity().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
+                }
+                else {
+                    String currentTime = Long.toString(System.currentTimeMillis());
+                    String fileName = "MOV"+currentTime+".mp4";
+                    myMediaFile = new File(filePath2, fileName);
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Files.FileColumns.DATE_ADDED, currentTime);
+                    values.put(MediaStore.Files.FileColumns.DATE_MODIFIED, currentTime);
+                    values.put(MediaStore.Files.FileColumns.MEDIA_TYPE, MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
+                    values.put(MediaStore.Files.FileColumns.DATA, filePath2);
+                    getActivity().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
+                }
                 Toast.makeText(getActivity().getApplicationContext(),"Saved",Toast.LENGTH_SHORT).show();
                 myVideoView.setVisibility(View.INVISIBLE);
                 myPhotoView.setVisibility(View.INVISIBLE);
             }
-        });*/
+        });
 
         return view;
     }
@@ -86,7 +112,8 @@ public class Tab2Fragment extends Fragment {
         switch (requestCode) {
             case (REQUEST_CODE_IMAGE):
                 if (resultCode == Activity.RESULT_OK) {
-                    String filePath1 = data.getStringExtra("imageFilePath");
+                    isImageFlag = true;
+                    filePath1 = data.getStringExtra("imageFilePath");
                     myVideoView.setVisibility(View.INVISIBLE);
                     myPhotoView.setVisibility(View.VISIBLE);
                     myBitmapOptions = new BitmapFactory.Options();
@@ -95,32 +122,13 @@ public class Tab2Fragment extends Fragment {
                     myPhotoView.setImageBitmap(myBitmap);
                     myMediaFile = new File(filePath1);
                     //myImageFile.delete();
-                    myDiscardButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            myMediaFile.delete();
-                            Toast.makeText(getActivity().getApplicationContext(), "Deleted", Toast.LENGTH_SHORT).show();
-                            myVideoView.setVisibility(View.INVISIBLE);
-                            myPhotoView.setVisibility(View.INVISIBLE);
-                        }
-                    });
-
-                    mySaveButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Toast.makeText(getActivity().getApplicationContext(),"Saved",Toast.LENGTH_SHORT).show();
-                            myVideoView.setVisibility(View.INVISIBLE);
-                            myPhotoView.setVisibility(View.INVISIBLE);
-                        }
-                    });
-
-
                 }
                 break;
 
             case (REQUEST_CODE_VIDEO):
                 if (resultCode == Activity.RESULT_OK) {
-                    String filePath2 = data.getStringExtra("videoFilePath");
+                    isImageFlag = false;
+                    filePath2 = data.getStringExtra("videoFilePath");
                     myPhotoView.setVisibility(View.INVISIBLE);
                     myVideoView.setVisibility(View.VISIBLE);
                     Log.i("FILEPATH", "" + filePath2);
@@ -129,24 +137,6 @@ public class Tab2Fragment extends Fragment {
                     myVideoView.start();
                     myMediaFile = new File(filePath2);
                     //myVideoFile.delete();
-                    myDiscardButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            myMediaFile.delete();
-                            Toast.makeText(getActivity().getApplicationContext(), "Deleted", Toast.LENGTH_SHORT).show();
-                            myVideoView.setVisibility(View.INVISIBLE);
-                            myPhotoView.setVisibility(View.INVISIBLE);
-                        }
-                    });
-
-                    mySaveButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Toast.makeText(getActivity().getApplicationContext(),"Saved",Toast.LENGTH_SHORT).show();
-                            myVideoView.setVisibility(View.INVISIBLE);
-                            myPhotoView.setVisibility(View.INVISIBLE);
-                        }
-                    });
                 }
                 break;
         }
