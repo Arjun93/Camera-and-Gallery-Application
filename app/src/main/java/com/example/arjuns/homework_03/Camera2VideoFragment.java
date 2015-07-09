@@ -564,6 +564,7 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
             String fileName = "MOV"+currentTime+".mp4";
             myVideoFile = new File(actualLocation, fileName);
 
+
             /*ContentValues values = new ContentValues();
 
             values.put(MediaStore.Files.FileColumns.DATE_ADDED, currentTime);
