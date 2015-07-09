@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
             myTag = tag;
             myClass = clzz;
         }
+
         @Override
         public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
             if(myFragment == null) {
@@ -56,7 +57,6 @@ public class MainActivity extends Activity {
             else {
                 ft.attach(myFragment);
             }
-
         }
 
         @Override
@@ -71,9 +71,6 @@ public class MainActivity extends Activity {
 
         }
     }
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

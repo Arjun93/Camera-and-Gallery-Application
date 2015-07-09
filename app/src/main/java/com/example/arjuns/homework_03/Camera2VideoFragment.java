@@ -8,7 +8,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,7 +28,6 @@ import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Size;
@@ -41,10 +39,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
-
 import java.io.File;
 import java.io.IOException;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -342,10 +338,7 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
             if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }
-
-
             String cameraId = manager.getCameraIdList()[0];
-
 
             for(final String cameraID : manager.getCameraIdList()){
                 Log.d("CameraID:", cameraID);
@@ -424,15 +417,12 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
             texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
             mPreviewBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
             List<Surface> surfaces = new ArrayList<Surface>();
-
             Surface previewSurface = new Surface(texture);
             surfaces.add(previewSurface);
             mPreviewBuilder.addTarget(previewSurface);
-
             Surface recorderSurface = mMediaRecorder.getSurface();
             surfaces.add(recorderSurface);
             mPreviewBuilder.addTarget(recorderSurface);
-
             mCameraDevice.createCaptureSession(surfaces, new CameraCaptureSession.StateCallback() {
 
                 @Override
@@ -529,20 +519,21 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
     }
 
     private File getVideoFile(Context context) {
-        //return new File(context.getExternalFilesDir(null), "video.mp4");
 
         if(myVideoFile == null){
-            String[] projection = {MediaStore.Files.FileColumns.DATA};
+            // Set up an array of the Thumbnail Image ID column we want
+            String[] newProjection = {MediaStore.Files.FileColumns.DATA};
 
-            String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
+            // Set the selection query
+            String newSelection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
                     + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
                     + " OR "
                     + MediaStore.Files.FileColumns.MEDIA_TYPE + "="
                     + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
 
             Cursor cursor = getActivity().managedQuery(MediaStore.Files.getContentUri("external"),
-                    projection,
-                    selection,
+                    newProjection,
+                    newSelection,
                     null,
                     null);
 
@@ -550,30 +541,19 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
             String dataIndex = MediaStore.Files.FileColumns.DATA;
             int filePathColumn = cursor.getColumnIndexOrThrow(dataIndex);
             String filePath = cursor.getString(filePathColumn);
-
-            int substrInt = filePath.lastIndexOf("/");
+            int indexPosition = filePath.lastIndexOf("/"); //Get the index position of the last slash
             String actualLocation = "";
-            if(substrInt > 0) {
-                actualLocation = filePath.substring(0,substrInt+1);
+            if(indexPosition > 0) {
+                actualLocation = filePath.substring(0,indexPosition + 1); //Set the location excluding the content after the last slash
             }
 
             SimpleDateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
             String currentTime = myDateFormat.format(new Date());
-            String fileName = "MOV"+currentTime+".mp4";
+            String fileName = "VIDEO_" + currentTime + ".mp4"; //Set the file name for video files
             myVideoFile = new File(actualLocation, fileName);
-
-            /*ContentValues values = new ContentValues();
-            values.put(MediaStore.Files.FileColumns.DATE_ADDED, currentTime);
-            values.put(MediaStore.Files.FileColumns.DATE_MODIFIED, currentTime);
-            values.put(MediaStore.Files.FileColumns.MEDIA_TYPE, MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
-            values.put(MediaStore.Files.FileColumns.DATA, actualLocation + fileName);
-
-            getActivity().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);*/
         }
         return myVideoFile;
     }
-
-
 
     private void startRecordingVideo() {
         try {
@@ -600,9 +580,7 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
         Activity activity = getActivity();
         if (null != activity) {
             videoFile = getVideoFile(activity);
-            Toast.makeText(activity, "Video saved: " + videoFile,
-                    Toast.LENGTH_SHORT).show();
-        }
+            }
         //startPreview();
 
         Intent resultIntent = new Intent();
@@ -622,7 +600,6 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
             return Long.signum((long) lhs.getWidth() * lhs.getHeight() -
                     (long) rhs.getWidth() * rhs.getHeight());
         }
-
     }
 
     public static class ErrorDialog extends DialogFragment {
@@ -640,6 +617,5 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
                     })
                     .create();
         }
-
     }
 }

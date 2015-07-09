@@ -394,7 +394,7 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
 
         super.onActivityCreated(savedInstanceState);
 
-        String[] newProjection = {MediaStore.Files.FileColumns.DATA};
+        String[] newProjection = {MediaStore.Files.FileColumns.DATA}; // Set up an array of the Thumbnail Image ID column we want
 
         String newSelection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
                 + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
@@ -406,43 +406,22 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
                 newProjection,
                 newSelection,
                 null,
-                null);
+                null); // Create the cursor pointing to the SDCard
 
         newCursor.moveToPosition(1);
         String dataIndex = MediaStore.Files.FileColumns.DATA;
         int newColumnIndex = newCursor.getColumnIndexOrThrow(dataIndex);
         String newFilePath = newCursor.getString(newColumnIndex);
-
-        //showToast(newFilePath);
-
-        int substrInt = newFilePath.lastIndexOf("/");
+        int indexPosition = newFilePath.lastIndexOf("/"); //Finding the index position of the last slash
         String actualLocation = "";
-        if(substrInt > 0) {
-            actualLocation = newFilePath.substring(0, substrInt + 1);
+        if(indexPosition > 0) {
+            actualLocation = newFilePath.substring(0, indexPosition + 1); //Set the location excluding the content after the last slash
         }
-        //showToast(actualLocation);
 
-        //TODO - as per question name must be saved and only after preview
         SimpleDateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         String currentTime = myDateFormat.format(new Date());
-        String fileName = "IMAGE_"+currentTime+".jpg";
+        String fileName = "IMAGE_" + currentTime + ".jpg"; //Setting the file name for photos
         myImageFile = new File(actualLocation, fileName);
-        showToast(actualLocation);
-        /*ContentValues values = new ContentValues();
-
-        values.put(MediaStore.Files.FileColumns.DATE_ADDED, System.currentTimeMillis());
-        values.put(MediaStore.Files.FileColumns.DATE_MODIFIED, System.currentTimeMillis());
-        values.put(MediaStore.Files.FileColumns.MEDIA_TYPE, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
-        values.put(MediaStore.Files.FileColumns.DATA, actualLocation + fileName);
-
-        getActivity().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
-*/
-        Date myDate = new Date();
-
-        Log.i("Andrew ID", "" + this.getActivity().getApplicationContext().getString(R.string.andrewID));
-        Log.i("Device Name", "" + Build.DEVICE + " " + Build.BRAND);
-        Log.i("OS Version", "" + Build.VERSION.RELEASE);
-        Log.i("Time","" + myDate.toString());
     }
 
     @Override
@@ -770,7 +749,6 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request,
                                                TotalCaptureResult result) {
-                    showToast("Saved: " + myImageFile);
                     unlockFocus();
                     Intent resultIntent = new Intent();
                     resultIntent.putExtra("imageFilePath",myImageFile.getAbsolutePath());

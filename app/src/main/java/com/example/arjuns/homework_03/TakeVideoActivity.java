@@ -13,6 +13,7 @@ public class TakeVideoActivity extends Activity {
 
         setContentView(R.layout.take_video_layout);
 
+        //invoke Camera2VideoFragment
         getFragmentManager().beginTransaction()
                 .replace(R.id.videoFragment
                         , Camera2VideoFragment.newInstance()).commit();

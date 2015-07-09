@@ -44,7 +44,8 @@
             android:layout_height="wrap_content"
             android:text="@string/discard"
             android:id="@+id/discardButton"
-            android:layout_gravity="left|bottom" />
+            android:layout_gravity="left|bottom"
+            android:visibility="invisible"/>
 
         <Button
             android:layout_width="100dp"
@@ -52,7 +53,8 @@
             android:layout_toRightOf="@+id/discardButton"
             android:text="@string/save"
             android:id="@+id/saveButton"
-            android:layout_gravity="right|bottom" />
+            android:layout_gravity="right|bottom"
+            android:visibility="invisible"/>
 
     </RelativeLayout>
 

@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -41,6 +42,8 @@ public class Tab2Fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.camera_layout, container, false);
+
+        //Referencing the UI components present in camera_layout.xml
         myCaptureImageButton = (Button) view.findViewById(R.id.capturePhotoButton);
         myCaptureVideoButton = (Button) view.findViewById(R.id.captureVideoButton);
         mySaveButton = (Button) view.findViewById(R.id.saveButton);
@@ -48,6 +51,7 @@ public class Tab2Fragment extends Fragment {
         myPhotoView = (ImageView) view.findViewById(R.id.photoView);
         myVideoView = (VideoView) view.findViewById(R.id.videoView);
 
+        //Listener for capturing image
         myCaptureImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,6 +60,7 @@ public class Tab2Fragment extends Fragment {
             }
         });
 
+        //Listener for capturing video
         myCaptureVideoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,6 +69,7 @@ public class Tab2Fragment extends Fragment {
             }
         });
 
+        //Listener for discarding the media
         myDiscardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,14 +80,18 @@ public class Tab2Fragment extends Fragment {
             }
         });
 
+        //Listener for saving the media
         mySaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SimpleDateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
                 String currentTime = myDateFormat.format(new Date());
                 if(isImageFlag) {
+                    //if the media is an image
                     String fileName = "IMAGE_" + currentTime + ".jpg";
                     myMediaFile = new File(filePath1, fileName);
+
+                    //Setting the content values for the image to be displayed in the gallery
                     ContentValues values = new ContentValues();
                     values.put(MediaStore.Files.FileColumns.DATE_ADDED, currentTime);
                     values.put(MediaStore.Files.FileColumns.DATE_MODIFIED, currentTime);
@@ -89,10 +99,18 @@ public class Tab2Fragment extends Fragment {
                     values.put(MediaStore.Files.FileColumns.MIME_TYPE, "image/jpeg");
                     values.put(MediaStore.Files.FileColumns.DATA, filePath1);
                     getActivity().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
+                    Toast.makeText(getActivity().getApplicationContext(), "Location: " + filePath1, Toast.LENGTH_SHORT).show();
+
+                    //Hiding the buttons after save or discard.
+                    mySaveButton.setVisibility(View.INVISIBLE);
+                    myDiscardButton.setVisibility(View.INVISIBLE);
                 }
                 else {
+                    //if the media is a video
                     String fileName = "VIDEO_" + currentTime + ".mp4";
                     myMediaFile = new File(filePath2, fileName);
+
+                    //Setting the content values for the videos to be displayed in the gallery
                     ContentValues values = new ContentValues();
                     values.put(MediaStore.Files.FileColumns.DATE_ADDED, currentTime);
                     values.put(MediaStore.Files.FileColumns.DATE_MODIFIED, currentTime);
@@ -100,14 +118,32 @@ public class Tab2Fragment extends Fragment {
                     values.put(MediaStore.Files.FileColumns.MIME_TYPE, "video/mp4");
                     values.put(MediaStore.Files.FileColumns.DATA, filePath2);
                     getActivity().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
+                    Toast.makeText(getActivity().getApplicationContext(), "Location: " + filePath2, Toast.LENGTH_SHORT).show();
+
+                    //Hiding the buttons after save or discard.
+                    mySaveButton.setVisibility(View.INVISIBLE);
+                    myDiscardButton.setVisibility(View.INVISIBLE);
                 }
-                Toast.makeText(getActivity().getApplicationContext(),"Saved",Toast.LENGTH_SHORT).show();
-                myVideoView.setVisibility(View.INVISIBLE);
-                myPhotoView.setVisibility(View.INVISIBLE);
+
+                showLog(); //Print the contents to the logcat.
+
+                myVideoView.setVisibility(View.INVISIBLE); //Setting visibility back to invisible
+                myPhotoView.setVisibility(View.INVISIBLE); //Setting visibility back to invisible
             }
         });
 
         return view;
+    }
+
+    /*showLog() prints the andrew id, device name, os version and current date onto the logcat*/
+    public void showLog() {
+        String andrewID = this.getActivity().getApplicationContext().getString(R.string.andrewID);
+        String deviceName = Build.BRAND + " " + Build.DEVICE;
+        String osVersion = Build.VERSION.RELEASE;
+        SimpleDateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+        Date myDate = new Date();
+        String currentDateTime = myDateFormat.format(myDate);
+        Log.i("INFORMATION", "" + andrewID + " : " + deviceName + " " + osVersion + " : " + currentDateTime);
     }
 
     @Override
@@ -129,7 +165,7 @@ public class Tab2Fragment extends Fragment {
                     myBitmapOptions = new BitmapFactory.Options();
                     myBitmapOptions.inSampleSize = 2;
                     Bitmap myBitmap = BitmapFactory.decodeFile(filePath1,myBitmapOptions);
-                    myPhotoView.setImageBitmap(myBitmap);
+                    myPhotoView.setImageBitmap(myBitmap); //Setting the image on image preview
                     myMediaFile = new File(filePath1);
                     if(myMediaFile!=null) {
                         mySaveButton.setVisibility(View.VISIBLE);
@@ -145,7 +181,7 @@ public class Tab2Fragment extends Fragment {
                     myPhotoView.setVisibility(View.INVISIBLE);
                     myVideoView.setVisibility(View.VISIBLE);
                     Log.i("FILEPATH", "" + filePath2);
-                    myVideoView.setVideoPath(filePath2);
+                    myVideoView.setVideoPath(filePath2); //setting the video on video preview
                     myVideoView.requestFocus();
                     myVideoView.start();
                     myMediaFile = new File(filePath2);

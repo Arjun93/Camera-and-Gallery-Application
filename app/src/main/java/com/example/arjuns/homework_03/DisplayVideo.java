@@ -26,10 +26,12 @@ public class DisplayVideo extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.display_video_layout);
 
+        //Referencing the UI components present in display_video_layout.xml
         myDisplayVideoView = (VideoView)findViewById(R.id.myGridVideoView);
         displayMediaIntent = getIntent();
         path = displayMediaIntent.getStringExtra("filePath");
 
+        //Setting the video player
         myMediaController = new MediaController(this);
         myDisplayMetrics = new DisplayMetrics();
         this.getWindowManager().getDefaultDisplay().getMetrics(myDisplayMetrics);

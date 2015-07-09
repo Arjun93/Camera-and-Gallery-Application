@@ -26,10 +26,15 @@ public class DisplayImage extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.display_image_layout);
+
+        //Referencing the UI components present in display_image_layout.xml
         myDisplayImageView = (ImageView)findViewById(R.id.displayImageView);
         myTextView = (TextView)findViewById(R.id.textView2);
+
         displayMediaIntent = getIntent();
         path = displayMediaIntent.getStringExtra("filePath");
+
+        //Setting the bitmap on imageView
         myBitmapOptions = new BitmapFactory.Options();
         myBitmapOptions.inSampleSize = 2;
         myDisplayImageView.setImageBitmap(BitmapFactory.decodeFile(path, myBitmapOptions));

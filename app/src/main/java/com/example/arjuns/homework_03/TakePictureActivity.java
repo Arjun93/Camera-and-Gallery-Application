@@ -13,6 +13,7 @@ public class TakePictureActivity extends Activity {
 
         setContentView(R.layout.take_picture_layout);
 
+        //invoke Camera2BasicFragment
         getFragmentManager().beginTransaction()
                 .replace(R.id.cameraFragment
                         , Camera2BasicFragment.newInstance()).commit();
