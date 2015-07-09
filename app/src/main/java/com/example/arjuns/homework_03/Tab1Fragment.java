@@ -36,7 +36,6 @@ public class Tab1Fragment extends Fragment {
         final View myView = inflater.inflate(R.layout.gallery_layout,container,false);
         myGridView = (GridView)myView.findViewById(R.id.tab1);
 
-
         // Set up an array of the Thumbnail Image ID column we want
         String[] projection = {MediaStore.Images.Media.DATA,
                 MediaStore.Images.Media._ID,
@@ -81,6 +80,8 @@ public class Tab1Fragment extends Fragment {
 
             fileDates[i]= cursor.getString(dateIndex);
         }
+
+
 
         myGridView.setAdapter(new ImageAdapter(myView.getContext(), cursor, fileNameExtensions));
 

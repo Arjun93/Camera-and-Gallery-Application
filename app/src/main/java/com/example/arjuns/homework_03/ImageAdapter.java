@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.File;
 
@@ -20,22 +21,23 @@ import java.io.File;
  */
 public class ImageAdapter extends BaseAdapter{
     private Context mContext;
-    private Cursor myImageCursor;
+    private Cursor myMediaCursor;
     Tab1Fragment myFetcher;
     private static LayoutInflater myInflater;
     ImageView myGridImageView;
+    TextView myGridElementTextView;
     int[] myfileNameExtension;
     // Constructor
     public ImageAdapter(Context c, Cursor cursor, int[] fileNameExtension){
         mContext = c;
-        myImageCursor = cursor;
+        myMediaCursor = cursor;
         myInflater =  (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         myfileNameExtension=fileNameExtension;
     }
 
     @Override
     public int getCount() {
-        return myImageCursor.getCount();
+        return myMediaCursor.getCount();
     }
 
     @Override
@@ -56,21 +58,24 @@ public class ImageAdapter extends BaseAdapter{
             view = myInflater.inflate(R.layout.grid_view_element_layout, null);
         }
             myGridImageView = (ImageView)view.findViewById(R.id.myGridImageView);
+            myGridElementTextView = (TextView)view.findViewById(R.id.textView2);
             // Move cursor to current position
-            myImageCursor.moveToPosition(position);
+            myMediaCursor.moveToPosition(position);
             // Get the current value for the requested column
-            int myColumnIndex = myImageCursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
-            String imagePath = myImageCursor.getString(myColumnIndex);
-            File myFile = new File(imagePath);
-            Log.i("IMAGEPATH",""+imagePath);
+            int myColumnIndex = myMediaCursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
+            String mediaPath = myMediaCursor.getString(myColumnIndex);
+            File myFile = new File(mediaPath);
+            Log.i("MediaPath",""+mediaPath);
             if(myFile.exists())
             {
-               if(myfileNameExtension[position] ==3 ){
-                   Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(imagePath, MediaStore.Video.Thumbnails.MICRO_KIND);
+               if(myfileNameExtension[position] == 3 ){
+                   myGridElementTextView.setText("Video");
+                   Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mediaPath, MediaStore.Video.Thumbnails.MICRO_KIND);
                    myGridImageView.setImageBitmap(bitmap);
                }
                 else {
-                   myGridImageView.setImageBitmap(BitmapFactory.decodeFile(imagePath, myBitmapOptions));
+                   myGridElementTextView.setText("Image");
+                   myGridImageView.setImageBitmap(BitmapFactory.decodeFile(mediaPath, myBitmapOptions));
                }
             }
 

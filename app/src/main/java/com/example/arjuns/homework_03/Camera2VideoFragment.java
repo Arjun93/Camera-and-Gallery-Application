@@ -45,9 +45,11 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -549,24 +551,18 @@ public class Camera2VideoFragment extends Fragment implements View.OnClickListen
             int filePathColumn = cursor.getColumnIndexOrThrow(dataIndex);
             String filePath = cursor.getString(filePathColumn);
 
-            //showToast(filePath);
-
             int substrInt = filePath.lastIndexOf("/");
             String actualLocation = "";
             if(substrInt > 0) {
                 actualLocation = filePath.substring(0,substrInt+1);
             }
-            //showToast(actualLocation);
 
-            //TODO - as per question name must be saved and only after preview
-            //Time time = new Time();
-            String currentTime = Long.toString(System.currentTimeMillis());
+            SimpleDateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+            String currentTime = myDateFormat.format(new Date());
             String fileName = "MOV"+currentTime+".mp4";
             myVideoFile = new File(actualLocation, fileName);
 
-
             /*ContentValues values = new ContentValues();
-
             values.put(MediaStore.Files.FileColumns.DATE_ADDED, currentTime);
             values.put(MediaStore.Files.FileColumns.DATE_MODIFIED, currentTime);
             values.put(MediaStore.Files.FileColumns.MEDIA_TYPE, MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);

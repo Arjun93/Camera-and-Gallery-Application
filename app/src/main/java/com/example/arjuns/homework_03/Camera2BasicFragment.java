@@ -423,7 +423,9 @@ public class Camera2BasicFragment extends Fragment implements View.OnClickListen
         //showToast(actualLocation);
 
         //TODO - as per question name must be saved and only after preview
-        String fileName = "IMAGE_"+Long.toString(System.currentTimeMillis())+".jpg";
+        SimpleDateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String currentTime = myDateFormat.format(new Date());
+        String fileName = "IMAGE_"+currentTime+".jpg";
         myImageFile = new File(actualLocation, fileName);
         showToast(actualLocation);
         /*ContentValues values = new ContentValues();

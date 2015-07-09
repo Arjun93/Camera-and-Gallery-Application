@@ -20,6 +20,8 @@ import android.widget.VideoView;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by arjuns on 7/2/2015.
@@ -75,25 +77,27 @@ public class Tab2Fragment extends Fragment {
         mySaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SimpleDateFormat myDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+                String currentTime = myDateFormat.format(new Date());
                 if(isImageFlag) {
-                    String fileName = "IMAGE_" + Long.toString(System.currentTimeMillis()) + ".jpg";
+                    String fileName = "IMAGE_" + currentTime + ".jpg";
                     myMediaFile = new File(filePath1, fileName);
                     ContentValues values = new ContentValues();
-
-                    values.put(MediaStore.Files.FileColumns.DATE_ADDED, System.currentTimeMillis());
-                    values.put(MediaStore.Files.FileColumns.DATE_MODIFIED, System.currentTimeMillis());
+                    values.put(MediaStore.Files.FileColumns.DATE_ADDED, currentTime);
+                    values.put(MediaStore.Files.FileColumns.DATE_MODIFIED, currentTime);
                     values.put(MediaStore.Files.FileColumns.MEDIA_TYPE, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
+                    values.put(MediaStore.Files.FileColumns.MIME_TYPE, "image/jpeg");
                     values.put(MediaStore.Files.FileColumns.DATA, filePath1);
                     getActivity().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
                 }
                 else {
-                    String currentTime = Long.toString(System.currentTimeMillis());
-                    String fileName = "MOV"+currentTime+".mp4";
+                    String fileName = "VIDEO_" + currentTime + ".mp4";
                     myMediaFile = new File(filePath2, fileName);
                     ContentValues values = new ContentValues();
                     values.put(MediaStore.Files.FileColumns.DATE_ADDED, currentTime);
                     values.put(MediaStore.Files.FileColumns.DATE_MODIFIED, currentTime);
                     values.put(MediaStore.Files.FileColumns.MEDIA_TYPE, MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
+                    values.put(MediaStore.Files.FileColumns.MIME_TYPE, "video/mp4");
                     values.put(MediaStore.Files.FileColumns.DATA, filePath2);
                     getActivity().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
                 }
@@ -109,6 +113,12 @@ public class Tab2Fragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        myPhotoView.setVisibility(View.GONE);
+        myVideoView.setVisibility(View.GONE);
+        mySaveButton.setVisibility(View.GONE);
+        myDiscardButton.setVisibility(View.GONE);
+        filePath1= "";
+        filePath2= "";
         switch (requestCode) {
             case (REQUEST_CODE_IMAGE):
                 if (resultCode == Activity.RESULT_OK) {
@@ -121,7 +131,10 @@ public class Tab2Fragment extends Fragment {
                     Bitmap myBitmap = BitmapFactory.decodeFile(filePath1,myBitmapOptions);
                     myPhotoView.setImageBitmap(myBitmap);
                     myMediaFile = new File(filePath1);
-                    //myImageFile.delete();
+                    if(myMediaFile!=null) {
+                        mySaveButton.setVisibility(View.VISIBLE);
+                        myDiscardButton.setVisibility(View.VISIBLE);
+                    }
                 }
                 break;
 
@@ -136,7 +149,10 @@ public class Tab2Fragment extends Fragment {
                     myVideoView.requestFocus();
                     myVideoView.start();
                     myMediaFile = new File(filePath2);
-                    //myVideoFile.delete();
+                    if(myMediaFile!=null) {
+                        mySaveButton.setVisibility(View.VISIBLE);
+                        myDiscardButton.setVisibility(View.VISIBLE);
+                    }
                 }
                 break;
         }
